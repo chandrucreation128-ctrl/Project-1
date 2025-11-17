@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#667eea">
+    <title>CHANDRU CREATION - Billing</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+    <!-- Login/Register Section -->
+    <div id="auth-section" class="auth-container">
+        <div class="auth-box">
+            <h1>CHANDRU CREATION</h1>
+            <div class="auth-tabs">
+                <button class="tab-btn active" onclick="showLogin()">Login</button>
+                <button class="tab-btn" onclick="showRegister()">Register</button>
+            </div>
+            
+            <!-- Login Form -->
+            <div id="login-form" class="auth-form">
+                <input type="text" id="login-username" placeholder="Username" required>
+                <input type="password" id="login-password" placeholder="Password" required>
+                <button onclick="handleLogin()">Login</button>
+            </div>
+            
+            <!-- Register Form -->
+            <div id="register-form" class="auth-form" style="display: none;">
+                <input type="text" id="register-username" placeholder="Username" required>
+                <input type="password" id="register-password" placeholder="Password" required>
+                
+                <button onclick="handleRegister()">Register</button>
+            </div>
+            
+            <div id="auth-message" class="message"></div>
+        </div>
+    </div>
+
+    <!-- Main Application Section -->
+    <div id="app-section" class="app-container" style="display: none;">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-brand">CHANDRU CREATION</div>
+            <div class="nav-menu">
+                <button class="nav-btn active" onclick="showSection('products')">Products</button>
+                <button class="nav-btn" onclick="showSection('cart')">Cart <span id="cart-count">0</span></button>
+                <button class="nav-btn" onclick="showSection('invoices')">Invoices</button>
+                <button class="nav-btn" onclick="showSection('reports')">Reports</button>
+                <button class="nav-btn" onclick="handleLogout()">Logout</button>
+            </div>
+        </nav>
+
+        <!-- Toast Notification -->
+        <div id="toast" class="toast"></div>
+
+        <!-- Products Section -->
+        <div id="products-section" class="section active">
+            <div class="section-header">
+                <h2>Products</h2>
+                <button class="btn-primary" onclick="openProductModal()">+ Add Product</button>
+            </div>
+            
+            <div class="filter-bar">
+                <select id="category-filter" onchange="filterProducts()">
+                    <option value="">All Categories</option>
+                    <option value="Flex">Flex</option>
+                    <option value="Frame">Frame</option>
+                    <option value="Litho">Litho</option>
+                    <option value="Visiting Card">Visiting Card</option>
+                    <option value="Invitation">Invitation</option>
+                </select>
+                <input type="text" id="search-products" placeholder="Search products..." onkeyup="filterProducts()">
+            </div>
+            
+            <div id="products-grid" class="products-grid"></div>
+        </div>
+
+        <!-- Cart Section -->
+        <div id="cart-section" class="section">
+            <div class="section-header">
+                <h2>Shopping Cart</h2>
+            </div>
+            <div id="cart-items" class="cart-container">
+                <div class="empty-cart">Your cart is empty</div>
+            </div>
+            <div id="cart-summary" class="cart-summary" style="display: none;">
+                <div class="summary-row total">
+                    <span>Total:</span>
+                    <span id="cart-total">₹0.00</span>
+                </div>
+                <button class="btn-primary btn-pay" onclick="processPayment()">Pay Now</button>
+            </div>
+        </div>
+
+        <!-- Invoices Section -->
+        <div id="invoices-section" class="section">
+            <div class="section-header">
+                <h2>Invoices</h2>
+            </div>
+            <div id="invoices-list" class="invoices-list"></div>
+        </div>
+
+        <!-- Reports Section -->
+        <div id="reports-section" class="section">
+            <div class="section-header">
+                <h2>Monthly Sales Report</h2>
+            </div>
+            <div class="report-controls">
+                <label>Select Month:</label>
+                <input type="month" id="report-month" onchange="generateReport()">
+                <button class="btn-secondary" onclick="exportReportPDF()">Export PDF</button>
+                <button class="btn-secondary" onclick="exportReportText()">Export Text</button>
+            </div>
+            <div id="report-content" class="report-content"></div>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeProductModal()">&times;</span>
+            <h2 id="modal-title">Add Product</h2>
+            <form id="product-form" onsubmit="saveProduct(event)">
+                <input type="hidden" id="product-id">
+                <input type="text" id="product-name" placeholder="Product Name" required>
+                <input type="number" id="product-price" placeholder="Price" step="0.01" required>
+                <input type="url" id="product-image" placeholder="Image URL" required>
+                <select id="product-category" required>
+                    <option value="">Select Category</option>
+                    <option value="Flex">Flex</option>
+                    <option value="Frame">Frame</option>
+                    <option value="Litho">Litho</option>
+                    <option value="Visiting Card">Visiting Card</option>
+                    <option value="Invitation">Invitation</option>
+                </select>
+                <textarea id="product-description" placeholder="Description"></textarea>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeProductModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Invoice View Modal -->
+    <div id="invoice-modal" class="modal">
+        <div class="modal-content invoice-modal-content">
+            <span class="close" onclick="closeInvoiceModal()">&times;</span>
+            <div id="invoice-content"></div>
+            <div class="invoice-actions">
+                <button class="btn-primary" onclick="printInvoice()">Print</button>
+                <button class="btn-primary" onclick="downloadInvoicePDF()">Download PDF</button>
+                <button class="btn-secondary" onclick="closeInvoiceModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="auth.js"></script>
+    <script src="products.js"></script>
+    <script src="cart.js"></script>
+    <script src="invoice.js"></script>
+    <script src="reports.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
+

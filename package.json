@@ -1,0 +1,24 @@
+{
+  "name": "chandru-creation-billing",
+  "version": "1.0.0",
+  "description": "CHANDRU CREATION Studio Billing Application",
+  "main": "index.html",
+  "scripts": {
+    "build": "echo 'Build complete'",
+    "android": "npx cap sync android && npx cap open android"
+  },
+  "keywords": [
+    "billing",
+    "studio",
+    "invoice"
+  ],
+  "author": "CHANDRU CREATION",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "@capacitor/android": "^5.5.0",
+    "@capacitor/cli": "^5.5.0",
+    "@capacitor/core": "^5.5.0"
+  }
+}
+
